@@ -1,0 +1,32 @@
+{% extends "base.html"%}
+{%block title%} College Page {%endblock%}
+{%block content%}
+<div class="container mt-5">
+    <h2>Course List</h2>
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">College Name</th>
+            <th scope="col">College Code</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for colleges in colleges %}
+          <tr>
+            <td>{{ colleges.collegeName }}</td>
+            <td>{{ colleges.collegeCode }}</td>
+            <td>
+              <a href="#" class="btn btn-warning btn-sm">Edit</a>
+              <a href="#" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Add Button -->
+    <a href="#" class="btn btn-success mt-3">Add Course</a>
+</div>
+{%endblock%}
