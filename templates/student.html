@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-5">
+        <h2>Student List</h2>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Student ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Year Level</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Course</th>
+                <th scope="col">College</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for students in students %}
+              <tr>
+                <td>{{ students.studentID }}</td>
+                <td>{{ students.Name }}</td>
+                <td>{{ students.YearLevel }}</td>
+                <td>{{ students.Gender }}</td>
+                <td>{{ students.Course }}</td>
+                <td>{{ students.College }}</td>
+                <td>
+                  <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                  
+                  <!-- Form to handle the delete request -->
+                  <form action="{{ url_for('delete_student', studentID=students.studentID) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Add Button -->
+        <a href="#" class="btn btn-success mt-3 fixed-add-button btn-sm" id="openSidebar">Add Student</a>
+    </div>
+{% endblock %}
