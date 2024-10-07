@@ -24,7 +24,9 @@
                 <td>{{ students.Course }}</td>
                 <td>{{ students.College }}</td>
                 <td>
-                  <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                  <!-- Form for editing the student-->
+                  <a href="#" class="btn btn-warning btn-sm" id="openEditsidebar">Edit</a>
+
                   
                   <!-- Form to handle the delete request -->
                   <form action="{{ url_for('delete_student', studentID=students.studentID) }}" method="POST" style="display:inline;">
@@ -32,6 +34,7 @@
                 </td>
               </tr>
               {% endfor %}
+
             </tbody>
         </table>
 
@@ -39,3 +42,8 @@
         <a href="#" class="btn btn-success mt-3 fixed-add-button btn-sm" id="openSidebar">Add Student</a>
     </div>
 {% endblock %}
+<script>
+  document.getElementById("openEditSidebar").addEventListener("click", function() {
+      document.getElementById("sidebar").style.display = "block";
+  });
+</script>
