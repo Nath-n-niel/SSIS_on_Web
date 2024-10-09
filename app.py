@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, request
+from flask import Flask, redirect, url_for, render_template, request, flash
 import mysql.connector
 
 app = Flask(__name__)
@@ -10,6 +10,7 @@ db = mysql.connector.connect(
     password="hostpassword",  # replace with your MySQL password
     database="webssis"  # replace with your database name
 )
+cursor = db.cursor()
 
 @app.route("/")
 def home():
@@ -18,6 +19,7 @@ def home():
 @app.route("/student", methods = ["POST" , "GET"])
 def student():
 	cursor = db.cursor(dictionary=True)
+     
 	cursor.execute("SELECT * FROM students")  
 	students = cursor.fetchall() 
 
@@ -76,7 +78,7 @@ def add_student():
 
 
 # Delete student
-@app.route("/delete_student/<studentID>", methods=["POST"])
+@app.route("/student/delete_student/<studentID>", methods=["POST"])
 def delete_student(studentID):
     cursor = db.cursor()
     delete_query = "DELETE FROM students WHERE studentID = %s"
@@ -89,41 +91,34 @@ def delete_student(studentID):
         print(f"Error: {err}")
         db.rollback()
         return "Error deleting student", 500
-
-# Edit Student
-@app.route("/student/edit_student/<studentID>", methods=["GET", "POST"])
-def edit_student(studentID):
-    cursor = db.cursor(dictionary=True)
     
+
+
+@app.route('/student/edit_student', methods=['POST'])
+def edit_student():
+    # Get the data from the form
     if request.method == "POST":
-        # Get updated data from the form
-        Name = request.form['Name']
-        YearLevel = request.form['year_level']
-        Gender = request.form['gender']
-        Course = request.form['course']
-        College = request.form['college']
+        studentID = request.form["studentID"]
+        name = request.form["name"]
+        year_level = request.form["YearLevel"]
+        gender = request.form["gender"]
+        course = request.form["course"]
+        college = request.form["college"]
         
-        # Update the student's data in the database
-        update_query = """
-            UPDATE students
-            SET Name = %s, YearLevel = %s, Gender = %s, Course = %s, College = %s
-            WHERE studentID = %s
+        cursor = db.cursor()
+
+        query = """
+        UPDATE students 
+        SET Name = %s, YearLevel = %s, Gender = %s, Course = %s, College = %s
+        WHERE studentID = %s
         """
         
-        try:
-            cursor.execute(update_query, (studentID, Name, YearLevel, Gender, Course, College))
-            db.commit()
-            return redirect(url_for('student'))  # Redirect back to the student list
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-            db.rollback()
-            return "Error updating student", 500
+        cursor.execute(query, (name, year_level, gender, course, college, studentID))
+        db.commit()
+        cursor.close()
+
+        return redirect(url_for("student"))
     
-    # For GET request, fetch the student data to pre-fill the form
-    cursor.execute("SELECT * FROM students WHERE studentID = %s", (studentID,))
-    students = cursor.fetchone()
-    
-    return render_template("edit_student.html", students=students)
 
 
 if __name__ == "__main__":
