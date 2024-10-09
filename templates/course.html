@@ -44,9 +44,8 @@
   <div id="coursesidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" id="closeCourseSidebar">&times;</a>
       <form method="POST" action="/course/add_course">
-          <h4>Add Student</h4>
+          <h4>Add Course</h4>
 
-          
           <!-- Course Name Fields -->
             <div class="form-group">
               <label for="Course Name">Course Name</label>
@@ -60,13 +59,15 @@
                 {% for college in colleges %}
                 <option value="{{ college }}">{{ college }}</option>
                 {% endfor %}
-
+                </select>
+                </div>
                 <!-- Course Code Field  -->
                  <div class="form-group">
                    <label for="courseCode">Course Code</label>
                    <input type="text" name="courseCode" id="courseCode" class="form-control" required>
                  </div>
-                </select>
+
+
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
               </div>

@@ -153,7 +153,7 @@ def add_course():
     return redirect(url_for("course"))
 
 # Delete Course
-@app.route("/student/delete_course/<courseCode>", methods=["POST"])
+@app.route("/course/delete_course/<courseCode>", methods=["POST"])
 def delete_course(courseCode):
     cursor = db.cursor()
     delete_query = "DELETE FROM courses WHERE courseCode = %s"
@@ -168,7 +168,7 @@ def delete_course(courseCode):
         return "Error deleting course", 500
     
 
-
+# Edit Course
 @app.route('/course/edit_course', methods=['POST'])
 def edit_course():
     # Retrieve the form data from the modal
@@ -191,6 +191,65 @@ def edit_course():
     return redirect(url_for('course'))
     
 
+# Add College
+@app.route("/college/add_college", methods=["POST"])
+def add_college():
+    collegeName = request.form['collegeName']
+    collegeCode = request.form['collegeCode']
+
+
+    # Insert into the database
+    cursor = db.cursor()
+    insert_query = """
+    INSERT INTO colleges (collegeName, collegeCode)
+    VALUES (%s, %s)
+    """
+    values = (collegeName, collegeCode)
+    
+    try:
+        cursor.execute(insert_query, values)
+        db.commit()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        db.rollback()
+
+    return redirect(url_for("college"))
+
+
+# Delete College
+@app.route("/college/delete_college/<collegeCode>", methods=["POST"])
+def delete_college(collegeCode):
+    cursor = db.cursor()
+    delete_query = "DELETE FROM colleges WHERE collegeCode = %s"
+    
+    try:
+        cursor.execute(delete_query, (collegeCode,))
+        db.commit()
+        return redirect(url_for('college'))  # Redirect back to the college list page
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        db.rollback()
+        return "Error deleting course", 500
+
+@app.route('/college/edit_college', methods=['POST'])
+def edit_college():
+    # Retrieve the form data from the modal
+    college_name = request.form['collegeName']
+    college_code = request.form['collegeCode']  # This is a hidden field and not editable
+
+    # SQL query to update the college
+    cursor = db.cursor()
+    query = """
+        UPDATE colleges
+        SET collegeName = %s
+        WHERE collegeCode = %s
+    """
+    cursor.execute(query, (college_name, college_code))
+    db.commit()
+    cursor.close()
+
+    # After updating, redirect to the colleges page
+    return redirect(url_for('college'))
 
 if __name__ == "__main__":
 	app.run(debug=True)
