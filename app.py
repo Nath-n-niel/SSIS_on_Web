@@ -14,8 +14,9 @@ cursor = db.cursor()
 
 @app.route("/")
 def home():
-	return render_template("index.html")
+	return render_template("base.html")
 
+# Student Main
 @app.route("/student", methods = ["POST" , "GET"])
 def student():
 	cursor = db.cursor(dictionary=True)
@@ -31,15 +32,22 @@ def student():
 	colleges = cursor.fetchall()
 
 	return render_template("student.html", students=students, courses=[c['courseCode'] for c in courses], colleges=[c['collegeCode'] for c in colleges])
-	
+
+
+# Course Main
 @app.route("/course", methods = ["POST" , "GET"])
 def course():
-	cursor = db.cursor(dictionary=True)
-	cursor.execute("SELECT * FROM courses")  
-	courses = cursor.fetchall()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM courses")  
+    courses = cursor.fetchall()
+    
+    # Fetch distinct colleges from the database
+    cursor.execute("SELECT DISTINCT collegeCode FROM colleges")
+    colleges = cursor.fetchall()
+    
+    return render_template("course.html", courses=courses, colleges=[c['collegeCode'] for c in colleges])
 
-	return render_template("course.html", courses=courses)
-
+# College Main
 @app.route("/college", methods = ["POST" , "GET"])
 def college():
 	cursor = db.cursor(dictionary=True)
@@ -93,7 +101,7 @@ def delete_student(studentID):
         return "Error deleting student", 500
     
 
-
+#Edit Student
 @app.route('/student/edit_student', methods=['POST'])
 def edit_student():
     # Get the data from the form
@@ -118,6 +126,69 @@ def edit_student():
         cursor.close()
 
         return redirect(url_for("student"))
+    
+
+# Add Course
+@app.route("/course/add_course", methods=["POST"])
+def add_course():
+    courseCode = request.form['courseCode']
+    courseName = request.form['courseName']
+    collegeCode = request.form['college']
+
+    # Insert into the database
+    cursor = db.cursor()
+    insert_query = """
+    INSERT INTO courses (courseName, collegeCode, courseCode)
+    VALUES (%s, %s, %s)
+    """
+    values = (courseName, collegeCode, courseCode)
+    
+    try:
+        cursor.execute(insert_query, values)
+        db.commit()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        db.rollback()
+
+    return redirect(url_for("course"))
+
+# Delete Course
+@app.route("/student/delete_course/<courseCode>", methods=["POST"])
+def delete_course(courseCode):
+    cursor = db.cursor()
+    delete_query = "DELETE FROM courses WHERE courseCode = %s"
+    
+    try:
+        cursor.execute(delete_query, (courseCode,))
+        db.commit()
+        return redirect(url_for('course'))  # Redirect back to the student list page
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        db.rollback()
+        return "Error deleting course", 500
+    
+
+
+@app.route('/course/edit_course', methods=['POST'])
+def edit_course():
+    # Retrieve the form data from the modal
+    courseCode = request.form['courseCode']
+    courseName = request.form['courseName']
+    college = request.form['college']
+
+    # SQL query to update the course
+    cursor = db.cursor()
+    query = """
+        UPDATE courses 
+        SET courseName = %s, collegeCode = %s
+        WHERE courseCode = %s
+    """
+    cursor.execute(query, (courseName, college, courseCode))
+    db.commit()
+    cursor.close()
+
+    # After updating, redirect to the courses page
+    return redirect(url_for('course'))
     
 
 
