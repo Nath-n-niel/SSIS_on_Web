@@ -30,10 +30,56 @@
                         <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="college">Colleges</a>
                         </li>
-                <form class="d-flex" role="search">
-                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+                <form class="d-flex" role="search" autocomplete="off">
+                  <input class="form-control me-2" id="searchInput" type="text" placeholder="Search" aria-label="Search">
                   <button class="btn btn-outline-success" type="submit">Search</button>
+                
+                  <!-- Dropdown to show search suggestions -->
+                  <div id="searchResults" class="dropdown-menu" style="display: none; max-height: 300px; overflow-y: auto;"></div>
                 </form>
+                
+                <script>
+                  $(document).ready(function() {
+                    $('#searchInput').on('input', function() {
+                      var query = $(this).val();
+                      if (query.length > 1) {
+                        // Send AJAX request to search
+                        $.ajax({
+                          url: '/search',
+                          method: 'GET',
+                          data: { query: query },
+                          success: function(data) {
+                            // Show the dropdown menu
+                            var resultsDropdown = $('#searchResults');
+                            resultsDropdown.empty().show();
+                
+                            if (data.length === 0) {
+                              resultsDropdown.hide();
+                              return;
+                            }
+                
+                            // Populate the dropdown with results
+                            data.forEach(function(result) {
+                              var displayText = result.code + " - " + result.name + " (" + result.type + ")";
+                              resultsDropdown.append('<a href="#" class="dropdown-item">' + displayText + '</a>');
+                            });
+                          }
+                        });
+                      } else {
+                        // Hide dropdown if query is too short
+                        $('#searchResults').hide();
+                      }
+                    });
+                
+                    // Hide the dropdown when clicking outside of the search bar
+                    $(document).click(function(e) {
+                      if (!$(e.target).closest('#searchInput, #searchResults').length) {
+                        $('#searchResults').hide();
+                      }
+                    });
+                  });
+                </script>
               </div>
             </div>
           </nav>

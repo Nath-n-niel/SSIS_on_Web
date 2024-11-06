@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, request, flash
+from flask import Flask, redirect, url_for, render_template, request, jsonify
 import mysql.connector
 
 app = Flask(__name__)
@@ -250,6 +250,33 @@ def edit_college():
 
     # After updating, redirect to the colleges page
     return redirect(url_for('college'))
+
+
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '')
+
+    if query:
+        cursor = db.cursor(dictionary=True)
+
+        # Query to search both courses and students
+        cursor.execute("""
+            SELECT 'Course' as type, courseCode as code, courseName as name
+            FROM courses
+            WHERE courseCode LIKE %s OR courseName LIKE %s
+            UNION
+            SELECT 'Student' as type, studentID as code, studentName as name
+            FROM students
+            WHERE studentID LIKE %s OR studentName LIKE %s
+        """, (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%'))
+        
+        results = cursor.fetchall()
+        cursor.close()
+
+        return jsonify(results)
+    
+    return jsonify([])  # Return an empty list if no query is given
 
 if __name__ == "__main__":
 	app.run(debug=True)
