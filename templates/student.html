@@ -2,6 +2,53 @@
 {% block content %}
     <div class="container mt-6">
         <h2>Student List</h2>
+
+        <!-- Search Form on the top-right -->
+<div class="container mt-3">
+  <form action="{{ url_for('student_search') }}" method="POST" class="form-inline justify-content-end">
+      <select name="search_type" class="form-control mr-2">
+          <option value="ID">ID Number</option>
+          <option value="course">Course</option>
+          <option value="college">College</option>
+          <option value="gender">Gender</option>
+          <option value="YearLevel">Year Level</option>
+      </select>
+      <input type="text" name="search_query" placeholder="Search..." class="form-control mr-2" required>
+      <button type="submit" class="btn btn-outline-primary">Search</button>
+  </form>
+</div>
+
+<!-- Search Results Section -->
+{% if search_results %}
+<div class="container mt-5">
+    <h3>Search Results for "{{ search_query }}" by {{ search_type }}</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                {% if search_type != "ID" %}
+                <th>{{ search_type }}</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in search_results %}
+            <tr>
+                <td>{{ result.studentID }}</td>
+                <td>{{ result.Name }}</td>
+                {% if search_type != "ID" %}
+                <td>{{ result[search_type] }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+
+
         <table class="table table-striped">
             <thead>
               <tr>
@@ -42,6 +89,10 @@
 
             </tbody>
         </table>
+
+ 
+
+
 
         <!-- Add Button -->
         <a href="#" class="btn btn-success mt-3 fixed-add-button btn-sm" id="openAddSidebar">Add Student</a>
@@ -170,9 +221,6 @@
           <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </form>
-    </div>
-  </div>
-</div>
 
 
 
@@ -226,6 +274,7 @@
         document.getElementById("sidebar").classList.remove("sidebar-open");
     });
   </script>
+
+
 {% endblock %}
 
->>>>>>> master

@@ -1,16 +1,21 @@
+from flask import Flask, redirect, url_for, render_template, request, jsonify
+import mysql.connector
 
-@app.route("/")
-def home():
-	return render_template("index.html")
+app = Flask(__name__)
 
-@app.route("/student", methods = ["POST" , "GET"])
-def student():
-	cursor = db.cursor(dictionary=True)
+
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",  #  MySQL username
+    password="hostpassword",  # MySQL password
+    database="webssis"  # database name
+)
 cursor = db.cursor()
 
 @app.route("/")
 def home():
 	return render_template("base.html")
+
 
 # Student Main
 @app.route("/student", methods = ["POST" , "GET"])
@@ -28,6 +33,7 @@ def student():
 	colleges = cursor.fetchall()
 
 	return render_template("student.html", students=students, courses=[c['courseCode'] for c in courses], colleges=[c['collegeCode'] for c in colleges])
+
 # Course Main
 @app.route("/course", methods = ["POST" , "GET"])
 def course():
@@ -243,32 +249,25 @@ def edit_college():
     # After updating, redirect to the colleges page
     return redirect(url_for('college'))
 
+@app.route("/search", methods=["POST"])
+def student_search():
+    search_query = request.form.get("search_query")
+    search_type = request.form.get("search_type")
 
+    cursor = db.cursor(dictionary=True)
 
-@app.route('/search', methods=['GET'])
-def search():
-    query = request.args.get('query', '')
+    # If searching by ID
+    if search_type == "ID":
+        cursor.execute("SELECT * FROM students WHERE studentID = %s", (search_query,))
+        result = cursor.fetchall()
 
-    if query:
-        cursor = db.cursor(dictionary=True)
+    # If searching by Course, College, Gender, or Year Level
+    else:
+        query = f"SELECT studentID, Name, {search_type} FROM students WHERE {search_type} = %s"
+        cursor.execute(query, (search_query,))
+        result = cursor.fetchall()
 
-        # Query to search both courses and students
-        cursor.execute("""
-            SELECT 'Course' as type, courseCode as code, courseName as name
-            FROM courses
-            WHERE courseCode LIKE %s OR courseName LIKE %s
-            UNION
-            SELECT 'Student' as type, studentID as code, studentName as name
-            FROM students
-            WHERE studentID LIKE %s OR studentName LIKE %s
-        """, (f'%{query}%', f'%{query}%', f'%{query}%', f'%{query}%'))
-        
-        results = cursor.fetchall()
-        cursor.close()
-
-        return jsonify(results)
-    
-    return jsonify([])  # Return an empty list if no query is given
+    return render_template("student.html", search_results=result, search_type=search_type, search_query=search_query)
 
 if __name__ == "__main__":
 	app.run(debug=True)
