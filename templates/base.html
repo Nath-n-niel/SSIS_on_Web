@@ -30,84 +30,66 @@
                         <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="college">Colleges</a>
                         </li>
-                <form class="d-flex" role="search">
-                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+                <form class="d-flex" role="search" autocomplete="off">
+                  <input class="form-control me-2" id="searchInput" type="text" placeholder="Search" aria-label="Search">
                   <button class="btn btn-outline-success" type="submit">Search</button>
+                
+                  <!-- Dropdown to show search suggestions -->
+                  <div id="searchResults" class="dropdown-menu" style="display: none; max-height: 300px; overflow-y: auto;"></div>
                 </form>
+                
+                <script>
+                  $(document).ready(function() {
+                    $('#searchInput').on('input', function() {
+                      var query = $(this).val();
+                      if (query.length > 1) {
+                        // Send AJAX request to search
+                        $.ajax({
+                          url: '/search',
+                          method: 'GET',
+                          data: { query: query },
+                          success: function(data) {
+                            // Show the dropdown menu
+                            var resultsDropdown = $('#searchResults');
+                            resultsDropdown.empty().show();
+                
+                            if (data.length === 0) {
+                              resultsDropdown.hide();
+                              return;
+                            }
+                
+                            // Populate the dropdown with results
+                            data.forEach(function(result) {
+                              var displayText = result.code + " - " + result.name + " (" + result.type + ")";
+                              resultsDropdown.append('<a href="#" class="dropdown-item">' + displayText + '</a>');
+                            });
+                          }
+                        });
+                      } else {
+                        // Hide dropdown if query is too short
+                        $('#searchResults').hide();
+                      }
+                    });
+                
+                    // Hide the dropdown when clicking outside of the search bar
+                    $(document).click(function(e) {
+                      if (!$(e.target).closest('#searchInput, #searchResults').length) {
+                        $('#searchResults').hide();
+                      }
+                    });
+                  });
+                </script>
               </div>
             </div>
           </nav>
 
-          <!-- Sidebar Form -->
-                <div id="sidebar" class="sidebar">
-                  <a href="javascript:void(0)" class="closebtn" id="closeSidebar">&times;</a>
-                  <form method="POST" action="/student/add_student">
-                      <h4>Add Student</h4>
-                       <!-- Student ID Field with Format ####-#### -->
-                          <div class="form-group">
-                            <label for="studentID">Student ID (Format: ####-####)</label>
-                            <input type="text" name="studentID" id="studentID" class="form-control" required pattern="\d{4}-\d{4}" placeholder="1234-5678">
-                        </div>
-
-                        <!-- Name Fields -->
-                        <div class="form-group">
-                            <label for="Name">Name</label>
-                            <input type="text" name="Name" id="Name" class="form-control" required>
-                        </div>
-
-                        <!-- Dropdowns for Year Level, Gender, Course, and College -->
-                      <div class="form-group">
-                          <label for="year_level">Year Level</label>
-                          <select name="year_level" id="year_level" class="form-control">
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="gender">Gender</label>
-                          <select name="gender" id="gender" class="form-control">
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="course">Course</label>
-                          <select name="course" id="course" class="form-control">
-                              {% for course in courses %}
-                              <option value="{{ course }}">{{ course }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="college">College</label>
-                          <select name="college" id="college" class="form-control">
-                              {% for college in colleges %}
-                              <option value="{{ college }}">{{ college }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
-
-                      <!-- Submit Button -->
-                      <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                  </form>
-                </div>
+          
             {% block content %}
             {% endblock %}
             <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
             <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    
-            <script>
-              document.getElementById("openSidebar").addEventListener("click", function() {
-                  document.getElementById("sidebar").classList.add("sidebar-open");
-              });
-              
-              document.getElementById("closeSidebar").addEventListener("click", function() {
-                  document.getElementById("sidebar").classList.remove("sidebar-open");
-              });
-              </script>
-              
+
         </body>
 </html>
