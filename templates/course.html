@@ -114,6 +114,24 @@
           <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
       </form>
+
+      <form class="d-flex mb-3" role="search" autocomplete="off" data-page="student">
+        <input class="form-control me-2" id="searchInput" type="text" placeholder="Search by ID" aria-label="Search">
+        <button class="btn btn-outline-success" type="button">Search</button>
+      </form>
+
+      <div id="resultForm" style="display: none;"></div>
+
+      <div class="course-form" style="display: none;">
+        <form>
+          <label for="courseCode">Course Code</label>
+          <input type="text" id="courseCode" class="form-control" readonly>
+          <label for="courseName">Course Name</label>
+          <input type="text" id="courseName" class="form-control" readonly>
+          <label for="courseCollege">College Code</label>
+          <input type="text" id="courseCollege" class="form-control" readonly>
+        </form>
+      </div>
     </div>
   </div>
 </div>
@@ -153,5 +171,5 @@
     document.getElementById('editcourseCode').value = courseCode;
   }
 </script>
->>>>>>> master
+
 {%endblock%}
