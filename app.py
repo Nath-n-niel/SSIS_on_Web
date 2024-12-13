@@ -1,5 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, jsonify
 import mysql.connector
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 
 app = Flask(__name__)
 
@@ -7,14 +9,14 @@ app = Flask(__name__)
 db = mysql.connector.connect(
     host="localhost",
     user="root",  #  MySQL username
-    password="hostpassword",  # MySQL password
-    database="webssis"  # database name
+    password="@nahida-dendro0997",  # MySQL password
+    database="ssis"  # database name
 )
 cursor = db.cursor()
 
 @app.route("/")
 def home():
-	return render_template("base.html")
+	return render_template("student.html")
 
 
 # Student Main
@@ -67,14 +69,26 @@ def add_student():
     Course = request.form['course']
     College = request.form['college']
 
+    # Check if a file is part of the request
+    photo_url = None
+    if 'profile_picture' in request.files:
+        profile_picture = request.files['profile_picture']
+        if profile_picture.filename != '':
+            try:
+                # Upload the image to Cloudinary
+                upload_result = upload(profile_picture)
+                photo_url = upload_result['url']
+            except Exception as e:
+                print(f"Error uploading to Cloudinary: {e}")
+
     # Insert into the database
     cursor = db.cursor()
     insert_query = """
-    INSERT INTO students (studentID, Name, YearLevel, Gender, Course, College)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    INSERT INTO students (studentID, Name, YearLevel, Gender, Course, College, Photo)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
-    values = (studentID, Name, YearLevel, Gender, Course, College)
-    
+    values = (studentID, Name, YearLevel, Gender, Course, College, photo_url)
+
     try:
         cursor.execute(insert_query, values)
         db.commit()
@@ -83,6 +97,7 @@ def add_student():
         db.rollback()
 
     return redirect(url_for("student"))
+
 
 # Delete student
 @app.route("/student/delete_student/<studentID>", methods=["POST"])

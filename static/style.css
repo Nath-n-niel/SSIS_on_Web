@@ -38,3 +38,9 @@
 .sidebar-open {
     width: 300px;
 }
+
+.img-thumbnail {
+    object-fit: cover;
+    border: 1px solid #ddd;
+    padding: 2px;
+}

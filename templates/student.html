@@ -52,6 +52,7 @@
         <table class="table table-striped">
             <thead>
               <tr>
+                <th scope="col">Photo</th>
                 <th scope="col">Student ID</th>
                 <th scope="col">Name</th>
                 <th scope="col">Year Level</th>
@@ -65,6 +66,13 @@
             <tbody>
               {% for students in students %}
               <tr>
+                <td>
+                  {% if students.Photo %}
+                      <img src="{{ students.Photo }}" alt="Profile Picture" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                  {% else %}
+                      <span>No Picture</span>
+                  {% endif %}
+              </td>
                 <td>{{ students.studentID }}</td>
                 <td>{{ students.Name }}</td>
                 <td>{{ students.YearLevel }}</td>
@@ -101,7 +109,7 @@
     <!-- Sidebar Form -->
     <div id="sidebar" class="sidebar">
       <a href="javascript:void(0)" class="closebtn" id="closeSidebar">&times;</a>
-      <form method="POST" action="/student/add_student">
+      <form method="POST" action="/student/add_student" enctype="multipart/form-data">
           <h4>Add Student</h4>
 
            <!-- Student ID Field with Format ####-#### -->
@@ -149,6 +157,11 @@
                   {% endfor %}
               </select>
           </div>
+
+          <div class="form-group">
+            <label for="profile_picture">Profile Picture</label>
+            <input type="file" name="profile_picture" id="profile_picture" class="form-control" accept="image/*">
+        </div>
 
           <!-- Submit Button -->
           <button type="submit" class="btn btn-primary mt-3">Submit</button>
