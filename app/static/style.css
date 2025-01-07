@@ -1,0 +1,46 @@
+.fixed-add-button {
+    position: fixed;
+    top: 80px;  /* Adjust based on your navigation bar height */
+    left: 20px; /* Adjust the distance from the left side */
+    z-index: 1000; /* Ensure it stays above most content */
+}
+
+.navbar {
+    z-index: 1001; /* Ensure the navbar remains above the button */
+}
+
+/* Sidebar styling */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    background-color: #f1f1f1;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidebar form {
+    margin-left: 25px;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+}
+
+/* Opened sidebar width */
+.sidebar-open {
+    width: 300px;
+}
+
+.img-thumbnail {
+    object-fit: cover;
+    border: 1px solid #ddd;
+    padding: 2px;
+}

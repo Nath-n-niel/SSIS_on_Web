@@ -16,7 +16,7 @@ cursor = db.cursor()
 
 @app.route("/")
 def home():
-	return render_template("student.html")
+	return render_template("base.html")
 
 
 # Student Main
