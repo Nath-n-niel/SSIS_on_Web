@@ -96,10 +96,10 @@
                   <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editStudentModal" 
                           onclick="fillEditForm('{{ students.studentID }}', '{{ students.Name }}', '{{ students.YearLevel }}', '{{ students.Gender }}', '{{ students.Course }}', '{{ students.College }}')">Edit</button>
 
-                  
-                  <!-- Form to handle the delete request -->
-                  <form action="{{ url_for('student.delete_student', studentID=students.studentID) }}" method="POST" style="display:inline;" onsubmit="return confirmDelete('{{ students.studentID }}', '{{ students.Name }}')">
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                          <!-- Form to handle the delete request -->
+                    <form action="{{ url_for('student.delete_student', studentID=students.studentID) }}" method="POST" style="display:inline;" onsubmit="return confirmDelete('{{ students.studentID }}', '{{ students.Name }}')">
+                      {{ form.csrf_token }}
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                   </form>
                 </td>
               </tr>

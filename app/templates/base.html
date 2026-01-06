@@ -9,7 +9,7 @@
     <body>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">SSIS</a>
+              <a class="navbar-brand" href="/base">SSIS</a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -98,7 +98,12 @@
          </form>
      </div>
    </div>
-
+{% if request.path == url_for('index') or request.path == '/base' or request.path == '/' %}
+<div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 70vh; text-align: center;">
+    <h1>Welcome to SSIS</h1>
+    <p>Click the buttons on the Navbar to continue</p>
+</div>
+{% endif %}
           
             {% block content %}
             {% endblock %}
